@@ -23,7 +23,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/rhceph-ci/promtail:v9.0-{{revision}
+    value: quay.io/rhceph-ci/alloy:v9.0-{{revision}}
   - name: build-platforms
     value:
     - linux/x86_64
