@@ -4,13 +4,13 @@ FROM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
 
 USER root
 
-RUN yum install -y cmake systemd-devel file \
+RUN yum install -y systemd-devel \
   && npm install -g yarn \
   && node -v \
   && yarn -v
 
 RUN go env -w GOBIN='/go/bin'
-COPY ./alloy/go.mod go.mod
+#COPY ./alloy/go.mod go.mod
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
 RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-$BUILDPLATFORM -o /usr/bin/helm \
