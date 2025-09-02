@@ -1,4 +1,4 @@
 [submodule "alloy"]
 	path = alloy
-	url = git@github.com:ibmstorage/alloy.git
+	url = https://github.com/ibmstorage/alloy.git
 	branch = release-9.0
