@@ -4,18 +4,17 @@ metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/ibmstorage/alloy-container?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
-    build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
-    pipelinesascode.tekton.dev/cancel-in-progress: "true"
+    pipelinesascode.tekton.dev/cancel-in-progress: "false"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
       == "release-9.0"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: ceph-9-0
-    appstudio.openshift.io/component: alloy-9-0
+    appstudio.openshift.io/application: build-dependency-9-0
+    appstudio.openshift.io/component: alloy-build-image
     pipelines.appstudio.openshift.io/type: build
-  name: alloy-9-0-on-pull-request
+  name: alloy-build-image-on-push
   namespace: ceph-tenant
 spec:
   params:
@@ -24,15 +23,13 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/rhceph-ci/alloy:on-pr-v9.0-{{revision}}
-  - name: image-expires-after
-    value: 5d
+    value: quay.io/rhceph-ci/alloy-build-image:v9.0-{{revision}}
   - name: build-platforms
     value:
     - linux/x86_64
     - linux/arm64
   - name: dockerfile
-    value: Dockerfile
+    value: alloy/tools/build-image/Dockerfile
   - name: path-context
     value: .
   pipelineSpec:
@@ -172,7 +169,7 @@ spec:
         - name: name
           value: git-clone-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-git-clone-oci-ta:0.1@sha256:d35e5d501cb5f5f88369511f76249857cb5ac30250e1dcf086939321964ff6b9
+          value: quay.io/konflux-ci/tekton-catalog/task-git-clone-oci-ta:0.1@sha256:4a601aeec58a1dd89c271e728fd8f0d84777825b46940c3aec27f15bab3edacf
         - name: kind
           value: task
         resolver: bundles
@@ -332,7 +329,7 @@ spec:
         - name: name
           value: deprecated-image-check
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-deprecated-image-check:0.5@sha256:3c8b81fa868e27c6266e7660a4bfb4c822846dcf4304606e71e20893b0d3e515
+          value: quay.io/konflux-ci/tekton-catalog/task-deprecated-image-check:0.5@sha256:1f57224c21021b2d497bac73312386d7421ec949241280a20102192acf1d01d3
         - name: kind
           value: task
         resolver: bundles
@@ -557,8 +554,7 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
       - name: ADDITIONAL_TAGS
         value:
-          - "pull-request-{{pull_request_number}}"
-          - "from-branch-{{source_branch}}"
+          - "v9.0"
           - "{{target_branch}}-$(tasks.clone-repository.results.commit-timestamp)"
       runAfter:
       - build-image-index
@@ -567,7 +563,7 @@ spec:
         - name: name
           value: apply-tags
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-apply-tags:0.2@sha256:517a51e260c0b59654a9d7b842e1ab07d76bce15ca7ce9c8fd2489a19be6463d
+          value: quay.io/konflux-ci/tekton-catalog/task-apply-tags:0.2@sha256:e0de426d492e195f59c99d2ea1ca0df7bfb8c689f5d1468fe7f70eb8684b8d02
         - name: kind
           value: task
         resolver: bundles
@@ -607,7 +603,7 @@ spec:
         - name: name
           value: rpms-signature-scan
         - name: bundle
-          value: quay.io/konflux-ci/konflux-vanguard/task-rpms-signature-scan:0.2@sha256:7d1c087d7d33dd97effb3b4c9f3788e4c3138da2032040d69da6929e9a3aaceb
+          value: quay.io/konflux-ci/tekton-catalog/task-rpms-signature-scan:0.2@sha256:1b6c20ab3dbfb0972803d3ebcb2fa72642e59400c77bd66dfd82028bdd09e120
         - name: kind
           value: task
         resolver: bundles
@@ -622,7 +618,7 @@ spec:
     - name: netrc
       optional: true
   taskRunTemplate:
-    serviceAccountName: build-pipeline-alloy-9-0
+    serviceAccountName: build-pipeline-alloy-build-image-9-0
   workspaces:
   - name: git-auth
     secret:
