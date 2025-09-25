@@ -1,34 +1,40 @@
-ARG BUILDPLATFORM
-
 FROM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
+ARG BUILDPLATFORM
+ARG ARCH
 
 USER root
 
+COPY yarn-install . 
+RUN npm install --offline
+RUN ln -s $PWD/node_modules/yarn/bin/yarn /usr/local/bin/yarn
+
 RUN yum install -y systemd-devel \
-  && npm install -g yarn \
+  && dnf module reset -y  nodejs \
   && node -v \
   && yarn -v
 
 RUN go env -w GOBIN='/go/bin'
-#COPY ./alloy/go.mod go.mod
+
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
-RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-$BUILDPLATFORM -o /usr/bin/helm \
- && GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
- && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
- && GOFLAGS="-mod=mod" go install github.com/tcnksm/ghr@v0.15.0                                           \
- && GOFLAGS="-mod=mod" go install github.com/grafana/tanka/cmd/tk@v0.22.1                                 \
- && GOFLAGS="-mod=mod" go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1                \
- && GOFLAGS="-mod=mod" go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0                        \
- && GOFLAGS="-mod=mod" go install github.com/golang/protobuf/protoc-gen-go@v1.3.1                         \
- && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/protoc-gen-gogoslick@v1.3.0                    \
- && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/gogoproto/...@v1.3.0                           \
- && GOFLAGS="-mod=mod" go install github.com/ahmetb/gen-crd-api-reference-docs@v0.3.1-0.20220618162802-424739b250f5 \
- && GOFLAGS="-mod=mod" go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
+RUN cp /cachi2/output/deps/generic/helm-linux-${BUILDPLATFORM} /usr/bin/helm
+
+#RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
+# && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
+# && GOFLAGS="-mod=mod" go install github.com/tcnksm/ghr@v0.15.0                                           \
+# && GOFLAGS="-mod=mod" go install github.com/grafana/tanka/cmd/tk@v0.22.1                                 \
+# && GOFLAGS="-mod=mod" go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1                \
+# && GOFLAGS="-mod=mod" go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0                        \
+# && GOFLAGS="-mod=mod" go install github.com/golang/protobuf/protoc-gen-go@v1.3.1                         \
+# && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/protoc-gen-gogoslick@v1.3.0                    \
+# && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/gogoproto/...@v1.3.0                           \
+# && GOFLAGS="-mod=mod" go install github.com/ahmetb/gen-crd-api-reference-docs@v0.3.1-0.20220618162802-424739b250f5 \
+# && GOFLAGS="-mod=mod" go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
 
 COPY . /src
 WORKDIR /src/alloy/internal/web/ui/
-RUN yarn --network-timeout=120000000 && yarn run build
+#RUN yarn install --offline --frozen-lockfile --ignore-scripts && yarn run build
+RUN yarn install --offline --frozen-lockfile --ignore-scripts && yarn run --offline build
 
 WORKDIR /src/alloy
 
@@ -40,8 +46,9 @@ FROM registry.access.redhat.com/ubi10-minimal:latest
 ARG UID="473"
 ARG USERNAME="alloy"
 
-RUN microdnf install -y yum \
-    && yum install -y ca-certificates tzdata
+RUN microdnf update -y
+
+RUN microdnf install -y tzdata shadow-utils
 
 COPY --from=golang_builder --chown=${UID}:${UID} /src/alloy/build/alloy /bin/alloy
 COPY --chown=${UID}:${UID} ./alloy/example-config.alloy /etc/alloy/config.alloy

@@ -1,0 +1,16 @@
+---
+metadata:
+  version: "1.0"
+artifacts:
+  - download_url: "https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-amd64"
+    checksum: "sha256:ef6c04f6a748d0f1d624a94a56dc0db83f8d70a65e3dbb19e94107126efcc5fd"
+    filename: "helm-darwin-amd64"
+  - download_url: "https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-arm64"
+    checksum: "sha256:16f0f770143c1134914d778ca8c86fccf5e2ff7c65ac8dceb8de16e93c2430c9"
+    filename: "helm-linux-arm64"
+  - download_url: "https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-ppc64le"
+    checksum: "sha256:0d58cf9a468fb0b43928e3b6a36125480217a5e1592b97f94046a15c988947e4"
+    filename: "helm-linux-ppc64le"
+  - download_url: "https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-s390x"
+    checksum: "sha256:ab23b83d74ad7da525d0c9c6a9f6cfed8614210fc9f8ade9495acfa012acfeb5"
+    filename: "helm-linux-s390x"
