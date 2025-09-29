@@ -1,20 +1,14 @@
+FROM --platform=$BUILDPLATFORM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
 ARG BUILDPLATFORM
-
-FROM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
 
 USER root
 
-RUN yum install -y cmake systemd-devel file \
-  && npm install -g yarn \
-  && node -v \
-  && yarn -v
-
 RUN go env -w GOBIN='/go/bin'
-COPY ./alloy/go.mod go.mod
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
-RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-$BUILDPLATFORM -o /usr/bin/helm \
- && GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
+RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-$BUILDPLATFORM -o /usr/bin/helm
+
+RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
  && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
  && GOFLAGS="-mod=mod" go install github.com/tcnksm/ghr@v0.15.0                                           \
  && GOFLAGS="-mod=mod" go install github.com/grafana/tanka/cmd/tk@v0.22.1                                 \
@@ -26,6 +20,11 @@ RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/he
  && GOFLAGS="-mod=mod" go install github.com/ahmetb/gen-crd-api-reference-docs@v0.3.1-0.20220618162802-424739b250f5 \
  && GOFLAGS="-mod=mod" go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
 
+RUN yum install -y cmake systemd-devel \
+  && npm install -g yarn \
+  && node -v \
+  && yarn -v
+
 COPY . /src
 WORKDIR /src/alloy/internal/web/ui/
 RUN yarn --network-timeout=120000000 && yarn run build
@@ -35,13 +34,14 @@ WORKDIR /src/alloy
 RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH= GOARM= make alloy
 
 # Stage 2
-FROM registry.access.redhat.com/ubi10-minimal:latest
+FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi10-minimal:latest
 
 ARG UID="473"
 ARG USERNAME="alloy"
 
-RUN microdnf install -y yum \
-    && yum install -y ca-certificates tzdata
+RUN microdnf update -y
+
+RUN microdnf install -y tzdata shadow-utils
 
 COPY --from=golang_builder --chown=${UID}:${UID} /src/alloy/build/alloy /bin/alloy
 COPY --chown=${UID}:${UID} ./alloy/example-config.alloy /etc/alloy/config.alloy
