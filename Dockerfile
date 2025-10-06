@@ -17,7 +17,13 @@ RUN go env -w GOBIN='/go/bin'
 
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
-RUN cp /cachi2/output/deps/generic/helm-linux-${BUILDPLATFORM} /usr/bin/helm
+# Helm installation as per https://helm.sh/docs/intro/install/
+RUN tar -zxvf /cachi2/output/deps/generic/helm-linux-${BUILDPLATFORM}.tar.gz \
+    && mv ./linux-${BUILDPLATFORM}/helm /usr/bin/helm
+
+#RUN cp /cachi2/output/deps/generic/helm-linux-${BUILDPLATFORM}.tar.gz ./ \
+#    && tar -zxvf helm-linux-${BUILDPLATFORM}.tar.gz \
+#    && mv ./linux-amd64/helm /usr/bin/helm
 
 #RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
 # && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
@@ -58,6 +64,8 @@ RUN groupadd --gid $UID $USERNAME \
     && mkdir -p /var/lib/alloy/data \
     && chown -R $USERNAME:$USERNAME /var/lib/alloy \
     && chmod -R 770 /var/lib/alloy
+
+COPY alloy/LICENSE /licenses/
 
 # Standard Red Hat labels
 LABEL com.redhat.component="alloy-container"
