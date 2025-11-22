@@ -87,7 +87,7 @@ spec:
       description: Execute the build with network isolation
       name: hermetic
       type: string
-    - default: '[{"type": "gomod", "path": "."}, {"type": "npm", "path": "yarn-install"}, {"type": "generic", "path": "."}, {"type": "yarn", "path": "alloy/internal/web/ui"}, {"type": "gomod", "path": "alloy"}, {"type": "rpm", "path": "."}]'
+    - default: '[{"type": "gomod", "path": "."}, {"type": "npm", "path": "yarn-install"}, {"type": "yarn", "path": "alloy/internal/web/ui"}, {"type": "gomod", "path": "alloy"}, {"type": "rpm", "path": "."}]'
       description: Build dependencies to be prefetched by Cachi2
       name: prefetch-input
       type: string

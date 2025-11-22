@@ -3,26 +3,42 @@ ARG BUILDPLATFORM
 
 USER root
 
+ENV PATH="/usr/bin/go:$PATH"
+ENV GOPATH='/opt/app-root/src/go'
+ENV GOCACHE='/opt/app-root/src/.cache/go-build'
+
+# Install Helm CLI (using prefetched modules)
+COPY . /src
+WORKDIR /src
+
+# This one will download the deps in the alloy-container folder's go.mod
+RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \
+    go mod download
+
+# Build helm binary using go
+RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \
+    go build -o /usr/bin/helm helm.sh/helm/v3/cmd/helm
+
 # Install yarn using npm package manager.
 COPY yarn-install . 
 RUN npm install --offline
 RUN ln -s $PWD/node_modules/yarn/bin/yarn /usr/local/bin/yarn
 
-RUN yum install -y systemd-devel \
+RUN yum install -y systemd-devel hostname \
   && dnf module reset -y nodejs \
   && node -v \
   && yarn -v
 
-# Helm installation as per https://helm.sh/docs/intro/install/
-RUN tar -zxvf /cachi2/output/deps/generic/helm-linux-${BUILDPLATFORM}.tar.gz \
-    && mv ./linux-${BUILDPLATFORM}/helm /usr/bin/helm
-
-COPY . /src
 WORKDIR /src/alloy/internal/web/ui/
 RUN yarn install --offline --frozen-lockfile --ignore-scripts && yarn run --offline build
 
 WORKDIR /src/alloy
 
+# This one will download the deps in the alloy subfolder's go.mod
+RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \
+    go mod download
+
+# We are only building for linux OS so we don't have to use GO_TAG="netgo"
 RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH= GOARM= RELEASE_BUILD=1 make alloy
 
 # Stage 2
