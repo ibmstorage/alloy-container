@@ -1,13 +1,15 @@
 FROM --platform=$BUILDPLATFORM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
 ARG BUILDPLATFORM
+ARG TARGETARCH
 
 USER root
 
+RUN go env -w GOBIN='/go/bin'
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
-RUN curl -L https://get.helm.sh/helm-v3.19.0-linux-$(echo $BUILDPLATFORM | cut -d '/' -f2).tar.gz -o ./helm.tar.gz \
+RUN curl -L https://get.helm.sh/helm-v3.19.0-linux-$TARGETARCH.tar.gz -o ./helm.tar.gz \
  && tar -zxvf ./helm.tar.gz \
- && mv ./linux-$(echo $BUILDPLATFORM | cut -d '/' -f2)/helm /usr/bin/helm
+ && mv ./linux-$TARGETARCH/helm /usr/bin/helm
 
 RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
  && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
@@ -52,8 +54,6 @@ RUN groupadd --gid $UID $USERNAME \
     && mkdir -p /var/lib/alloy/data \
     && chown -R $USERNAME:$USERNAME /var/lib/alloy \
     && chmod -R 770 /var/lib/alloy
-
-COPY alloy/LICENSE /licenses/
 
 # Standard Red Hat labels
 LABEL com.redhat.component="alloy-container"
