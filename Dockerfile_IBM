@@ -6,23 +6,27 @@ USER root
 RUN go env -w GOBIN='/go/bin'
 ENV CONTROLLER_GEN_VERSION v0.9.2
 
+COPY go.mod go.sum /src
+WORKDIR /src
+RUN go mod download
+
 RUN curl -L https://get.helm.sh/helm-v3.19.0-linux-$TARGETARCH.tar.gz -o ./helm.tar.gz \
  && tar -zxvf ./helm.tar.gz \
  && mv ./linux-$TARGETARCH/helm /usr/bin/helm
 
-RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
- && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
- && GOFLAGS="-mod=mod" go install github.com/tcnksm/ghr@v0.15.0                                           \
- && GOFLAGS="-mod=mod" go install github.com/grafana/tanka/cmd/tk@v0.22.1                                 \
- && GOFLAGS="-mod=mod" go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1                \
- && GOFLAGS="-mod=mod" go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0                        \
- && GOFLAGS="-mod=mod" go install github.com/golang/protobuf/protoc-gen-go@v1.3.1                         \
- && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/protoc-gen-gogoslick@v1.3.0                    \
- && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/gogoproto/...@v1.3.0                           \
- && GOFLAGS="-mod=mod" go install github.com/ahmetb/gen-crd-api-reference-docs@v0.3.1-0.20220618162802-424739b250f5 \
- && GOFLAGS="-mod=mod" go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
+#RUN GOFLAGS="-mod=mod" go install sigs.k8s.io/controller-tools/cmd/controller-gen@$CONTROLLER_GEN_VERSION \
+# && GOFLAGS="-mod=mod" go install github.com/mitchellh/gox@v1.0.1                                         \
+# && GOFLAGS="-mod=mod" go install github.com/tcnksm/ghr@v0.15.0                                           \
+# && GOFLAGS="-mod=mod" go install github.com/grafana/tanka/cmd/tk@v0.22.1                                 \
+# && GOFLAGS="-mod=mod" go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1                \
+# && GOFLAGS="-mod=mod" go install github.com/google/go-jsonnet/cmd/jsonnet@v0.18.0                        \
+# && GOFLAGS="-mod=mod" go install github.com/golang/protobuf/protoc-gen-go@v1.3.1                         \
+# && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/protoc-gen-gogoslick@v1.3.0                    \
+# && GOFLAGS="-mod=mod" go install github.com/gogo/protobuf/gogoproto/...@v1.3.0                           \
+# && GOFLAGS="-mod=mod" go install github.com/ahmetb/gen-crd-api-reference-docs@v0.3.1-0.20220618162802-424739b250f5 \
+# && GOFLAGS="-mod=mod" go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.11.0
 
-RUN yum install -y cmake systemd-devel \
+RUN yum install -y cmake systemd-devel hostname \
   && npm install -g yarn \
   && node -v \
   && yarn -v
@@ -32,6 +36,7 @@ WORKDIR /src/alloy/internal/web/ui/
 RUN yarn --network-timeout=120000000 && yarn run build
 
 WORKDIR /src/alloy
+RUN go mod download
 
 RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH=$TARGETARCH GOARM= RELEASE_BUILD=1 make alloy
 
