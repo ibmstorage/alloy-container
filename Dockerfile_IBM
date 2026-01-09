@@ -1,5 +1,4 @@
-FROM --platform=$BUILDPLATFORM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
-ARG BUILDPLATFORM
+FROM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
 ARG TARGETARCH
 
 USER root
@@ -34,10 +33,10 @@ RUN yarn --network-timeout=120000000 && yarn run build
 
 WORKDIR /src/alloy
 
-RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH= GOARM= RELEASE_BUILD=1 make alloy
+RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH=$TARGETARCH GOARM= RELEASE_BUILD=1 make alloy
 
 # Stage 2
-FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi10-minimal:latest
+FROM registry.access.redhat.com/ubi10-minimal:latest
 
 ARG UID="473"
 ARG USERNAME="alloy"
