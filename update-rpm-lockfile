@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# RHEL9 has the ability to handle modular metadata, required for using
+# rpm-lockfile-prototype.  Latest versions of Fedora are DNF5 which
+# removed the capability, although there's a 'dnf4' package that could
+# be used, presumably.
+CONTAINER_PULL=registry.access.redhat.com/ubi9:latest
+
+# relabel=shared lets us update the file on the host.
+podman run --volume $(pwd):/tmp:Z \
+	-it --rm $CONTAINER_PULL sh -c \
+	"cd /tmp && \
+	 dnf -y install python3-pip git skopeo && \
+         skopeo login registry.redhat.io && \
+	 pip3 install git+https://github.com/konflux-ci/rpm-lockfile-prototype && \
+	 rpm-lockfile-prototype rpms.in.yaml"

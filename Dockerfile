@@ -1,5 +1,5 @@
 FROM registry.redhat.io/ubi9/go-toolset:latest as golang_builder
-ARG BUILDPLATFORM
+ARG TARGETARCH
 
 USER root
 
@@ -39,7 +39,7 @@ RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \
     go mod download
 
 # We are only building for linux OS so we don't have to use GO_TAG="netgo"
-RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH= GOARM= RELEASE_BUILD=1 make alloy
+RUN GO_TAGS="builtinassets promtail_journal_enabled" GOOS="linux" GOARCH=$TARGETARCH GOARM= RELEASE_BUILD=1 make alloy
 
 # Stage 2
 FROM registry.access.redhat.com/ubi10-minimal:latest
