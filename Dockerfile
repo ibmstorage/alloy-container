@@ -64,7 +64,7 @@ COPY alloy/LICENSE /licenses/
 
 # Standard Red Hat labels
 LABEL com.redhat.component="alloy-container"
-LABEL name="alloy"
+LABEL name=rhceph/alloy-rhel10
 LABEL version="v1.10.2"
 LABEL summary="Provides alloy container"
 LABEL io.k8s.display-name="Alloy container"
@@ -74,10 +74,7 @@ LABEL io.k8s.description="Grafana Alloy is an open source OpenTelemetry Collecto
 LABEL io.openshift.tags="Alloy container"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
-LABEL cpe=cpe:/a:redhat:ceph_storage:9::el10
-
-# Add Creation date label
-LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL cpe=cpe:/a:redhat:ceph_storage:9.0::el9
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
