@@ -1,4 +1,4 @@
 [submodule "alloy"]
 	path = alloy
 	url = https://github.com/ibmstorage/alloy.git
-	branch = release-9.0
+	branch = hermetic-alloy
