@@ -17,6 +17,9 @@ metadata:
   name: alloy-9-0-on-pull-request
   namespace: ceph-tenant
 spec:
+  timeouts:
+    pipeline: 5h
+    tasks: 5h
   params:
   - name: git-url
     value: '{{source_url}}'
@@ -222,6 +225,7 @@ spec:
           value:
           - $(params.build-platforms)
       name: build-images
+      timeout: 5h
       params:
       - name: IMAGE
         value: $(params.output-image)
