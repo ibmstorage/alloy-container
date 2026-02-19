@@ -74,7 +74,7 @@ LABEL io.k8s.description="Grafana Alloy is an open source OpenTelemetry Collecto
 LABEL io.openshift.tags="Alloy container"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
-LABEL cpe=cpe:/a:redhat:ceph_storage:9.0::el9
+LABEL cpe=cpe:/a:redhat:ceph_storage:9.1::el9
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
