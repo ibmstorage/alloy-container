@@ -72,6 +72,7 @@ LABEL maintainer="Rakshitha Kamath <rkamath@redhat.com>"
 LABEL description="Grafana Alloy is an open source OpenTelemetry Collector distribution with built-in Prometheus pipelines and support for metrics, logs, traces, and profiles."
 LABEL io.k8s.description="Grafana Alloy is an open source OpenTelemetry Collector distribution with built-in Prometheus pipelines and support for metrics, logs, traces, and profiles."
 LABEL io.openshift.tags="Alloy container"
+LABEL org.opencontainers.image.source="https://github.com/ibmstorage/alloy-container.git"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
 LABEL cpe=cpe:/a:redhat:ceph_storage:9.1::el9
