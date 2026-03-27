@@ -21,7 +21,7 @@ spec:
     tasks: 5h
   params:
   - name: git-url
-    value: 'https://github.com/ibmstorage/alloy-container.git'
+    value: '{{source_url}}'
   - name: revision
     value: '{{revision}}'
   - name: output-image
