@@ -18,8 +18,8 @@ metadata:
   namespace: ceph-tenant
 spec:
   timeouts:
-    pipeline: 5h
-    tasks: 5h
+    pipeline: 7h
+    tasks: 7h
   params:
   - name: git-url
     value: '{{source_url}}'
@@ -210,7 +210,7 @@ spec:
           value:
           - $(params.build-platforms)
       name: build-images
-      timeout: 5h
+      timeout: 7h
       params:
       - name: IMAGE
         value: $(params.output-image)
