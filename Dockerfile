@@ -76,7 +76,7 @@ LABEL vcs-url="https://github.com/ibmstorage/alloy-container.git"
 LABEL org.opencontainers.image.source="https://github.com/ibmstorage/alloy-container.git"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
-LABEL cpe=cpe:/a:redhat:ceph_storage:9.1::el9
+LABEL cpe=cpe:/a:redhat:ceph_storage:9.2::el9
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
