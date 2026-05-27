@@ -67,3 +67,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}"
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
 CMD ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
+
+LABEL name=ibm-ceph/alloy-rhel10
+LABEL cpe=cpe:/a:redhat:ceph_storage:9.2::el9

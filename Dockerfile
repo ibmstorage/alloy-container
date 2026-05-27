@@ -81,3 +81,5 @@ LABEL cpe=cpe:/a:redhat:ceph_storage:9.1::el9
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
 CMD ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
+
+LABEL cpe=cpe:/a:redhat:ceph_storage:9.2::el9

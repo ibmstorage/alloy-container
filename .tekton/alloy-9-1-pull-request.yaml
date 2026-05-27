@@ -632,3 +632,10 @@ spec:
     secret:
       secretName: '{{ git_auth_secret }}'
 status: {}
+
+    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch == "release-9.2"
+    appstudio.openshift.io/application: ceph-9-2
+    appstudio.openshift.io/component: alloy-9-2
+  name: alloy-9-2-on-pull-request
+    value: quay.io/rhceph-ci/alloy:on-pr-v9.2-{{revision}}
+    serviceAccountName: build-pipeline-alloy-9-2
