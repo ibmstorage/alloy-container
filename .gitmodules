@@ -1,4 +1,4 @@
 [submodule "alloy"]
 	path = alloy
 	url = https://github.com/ibmstorage/alloy.git
-	branch = sps-release-9.2
+	branch = sps-release-9.1
