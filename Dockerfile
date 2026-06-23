@@ -78,6 +78,9 @@ LABEL org.opencontainers.image.source="https://github.com/ibmstorage/alloy-conta
 # The CPE (Common Platform Enumeration) identifier for Ceph.
 LABEL cpe=cpe:/a:redhat:ceph_storage:9.2::el10
 
+# Z-stream indicator
+LABEL Z-VERSION="9.2"
+
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
 CMD ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
