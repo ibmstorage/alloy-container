@@ -79,7 +79,7 @@ LABEL org.opencontainers.image.source="https://github.com/ibmstorage/alloy-conta
 LABEL cpe=cpe:/a:redhat:ceph_storage:9.1::el10
 
 # Z-stream indicator
-LABEL Z-VERSION="9.1"
+LABEL Z-VERSION="9.1z1"
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
