@@ -65,7 +65,7 @@ COPY alloy/LICENSE /licenses/
 # Standard Red Hat labels
 LABEL com.redhat.component="alloy-container"
 LABEL name=rhceph/alloy-rhel10
-LABEL version="v1.10.2"
+LABEL version="1.10.2"
 LABEL summary="Provides alloy container"
 LABEL io.k8s.display-name="Alloy container"
 LABEL maintainer="Rakshitha Kamath <rkamath@redhat.com>"
