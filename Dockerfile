@@ -65,7 +65,7 @@ COPY alloy/LICENSE /licenses/
 # Standard Red Hat labels
 LABEL com.redhat.component="alloy-container"
 LABEL name=rhceph/alloy-rhel10
-LABEL version="v1.10.2"
+LABEL version="1.10.2"
 LABEL summary="Provides alloy container"
 LABEL io.k8s.display-name="Alloy container"
 LABEL maintainer="Rakshitha Kamath <rkamath@redhat.com>"
@@ -75,6 +75,9 @@ LABEL io.openshift.tags="Alloy container"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
 LABEL cpe=cpe:/a:redhat:ceph_storage:9.0::el9
+
+# Z-stream indicator
+LABEL Z-VERSION="9.0z3"
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
