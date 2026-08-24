@@ -11,7 +11,7 @@ require (
 	github.com/jsonnet-bundler/jsonnet-bundler v0.6.0
 	github.com/mitchellh/gox v1.0.1
 	github.com/norwoodj/helm-docs v1.14.2
-	github.com/tcnksm/ghr v0.17.0
+	github.com/tcnksm/ghr v0.18.3
 	helm.sh/helm/v3 v3.19.2
 	sigs.k8s.io/controller-tools v0.19.0
 )
