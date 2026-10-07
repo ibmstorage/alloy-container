@@ -76,10 +76,10 @@ LABEL vcs-url="https://github.com/ibmstorage/alloy-container.git"
 LABEL org.opencontainers.image.source="https://github.com/ibmstorage/alloy-container.git"
 
 # The CPE (Common Platform Enumeration) identifier for Ceph.
-LABEL cpe=cpe:/a:redhat:ceph_storage:9.2::el10
+LABEL cpe=cpe:/a:redhat:ceph_storage:10.0::el10
 
 # Z-stream indicator
-LABEL Z-VERSION="9.2"
+LABEL Z-VERSION="10.0"
 
 ENTRYPOINT ["/bin/alloy"]
 ENV ALLOY_DEPLOY_MODE=docker
