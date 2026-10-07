@@ -16,16 +16,22 @@ metadata:
   name: alloy-10-0-on-push
   namespace: ceph-tenant
 spec:
+  timeouts:
+    pipeline: 7h
+    tasks: 7h
   params:
   - name: git-url
     value: '{{source_url}}'
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/rhceph-ci/alloy:{{revision}}
+    value: quay.io/rhceph-ci/alloy:v10.0-{{revision}}
   - name: build-platforms
     value:
     - linux/x86_64
+    - linux/arm64
+    - linux/ppc64le
+    - linux/s390x
   - name: dockerfile
     value: Dockerfile
   - name: path-context
@@ -61,11 +67,11 @@ spec:
       description: Skip checks against built image
       name: skip-checks
       type: string
-    - default: "false"
+    - default: "true"
       description: Execute the build with network isolation
       name: hermetic
       type: string
-    - default: ""
+    - default: '[{"type": "gomod", "path": "."}, {"type": "npm", "path": "yarn-install"}, {"type": "yarn", "path": "alloy/internal/web/ui"}, {"type": "gomod", "path": "alloy"}, {"type": "rpm", "path": "."}]'
       description: Build dependencies to be prefetched
       name: prefetch-input
       type: string
@@ -74,7 +80,7 @@ spec:
         1h, 2d, 3w for hours, days, and weeks, respectively.
       name: image-expires-after
       type: string
-    - default: "false"
+    - default: "true"
       description: Build a source image.
       name: build-source-image
       type: string
@@ -98,7 +104,7 @@ spec:
         tools. Multiple values should be separated with commas.
       name: sast-target-dirs
       type: string
-    - default: []
+    - default: ['BUILDPLATFORM=amd64','BUILDPLATFORM=arm64','BUILDPLATFORM=s390x','BUILDPLATFORM=ppc64le']
       description: Array of --build-arg values ("arg=value" strings) for buildah
       name: build-args
       type: array
@@ -218,6 +224,7 @@ spec:
           value:
           - $(params.build-platforms)
       name: build-images
+      timeout: 7h
       params:
       - name: IMAGE
         value: $(params.output-image)
@@ -510,6 +517,10 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
+      - name: ADDITIONAL_TAGS
+        value:
+        - "v10.0"
+        - "{{target_branch}}-$(tasks.clone-repository.results.commit-timestamp)"
       runAfter:
       - build-image-index
       taskRef:
